@@ -1,0 +1,382 @@
+/* ===================================================
+   Weather Tracker – style.css
+   A clean, modern, college-assignment-friendly stylesheet
+   =================================================== */
+
+/* ---------- 1. GOOGLE FONT ---------- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+/* ---------- 2. CSS CUSTOM PROPERTIES (variables) ---------- */
+/* 
+   We define reusable colours, sizes, and effects in one place.
+   If you ever want to change the palette, just edit these values.
+*/
+:root {
+    --bg-gradient-start: #0f0c29;   /* deep navy        */
+    --bg-gradient-mid:   #302b63;   /* purple            */
+    --bg-gradient-end:   #24243e;   /* dark slate        */
+
+    --card-bg:           rgba(255, 255, 255, 0.07);   /* glass effect */
+    --card-border:       rgba(255, 255, 255, 0.15);
+    --card-shadow:       rgba(0, 0, 0, 0.35);
+
+    --accent:            #00d4ff;   /* bright cyan       */
+    --accent-hover:      #00b8e6;
+    --accent-glow:       rgba(0, 212, 255, 0.35);
+
+    --text-primary:      #f0f0f0;
+    --text-secondary:    #b0b8c8;
+
+    --radius:            14px;
+    --transition-speed:  0.3s;
+
+    --font-main:         'Inter', sans-serif;
+}
+
+/* ---------- 3. RESET & BASE ---------- */
+/*
+   * { … }  → removes default margin/padding from every element
+   box-sizing: border-box  →  padding is included inside width/height
+*/
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;            /* 1rem = 16px */
+    scroll-behavior: smooth;
+}
+
+body {
+    /* Full-viewport gradient background */
+    min-height: 100vh;
+    font-family: var(--font-main);
+    color: var(--text-primary);
+    background: linear-gradient(135deg,
+        var(--bg-gradient-start),
+        var(--bg-gradient-mid),
+        var(--bg-gradient-end));
+    background-attachment: fixed;   /* gradient stays while scrolling */
+
+    /* Layout: side-by-side on desktop, stacked on mobile */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 30px;
+    padding: 40px 24px 60px;
+}
+
+/* ---------- 4. PAGE TITLE (h1) ---------- */
+/*
+   width: 100%  → forces it onto its own row inside the flex container
+   text-align: center  → centres the text
+   The gradient-text trick:
+     1. Apply a gradient as background-image
+     2. Clip the background to the text shape
+     3. Make the text colour transparent so the gradient shows through
+*/
+h1 {
+    width: 100%;
+    text-align: center;
+    font-size: 2.4rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+
+    background: linear-gradient(90deg, var(--accent), #a78bfa, #f472b6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    /* Subtle drop-shadow behind the text */
+    filter: drop-shadow(0 0 18px var(--accent-glow));
+
+    /* Fade-in animation on page load */
+    animation: fadeSlideDown 0.8s ease-out;
+}
+
+/* ---------- 5. GLASSMORPHISM CARD MIXIN ---------- */
+/*
+   Both .left-container and .right-container share the same
+   frosted-glass look, so we style them together.
+*/
+.left-container,
+.right-container {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    backdrop-filter: blur(14px);           /* the frosted-glass blur */
+    -webkit-backdrop-filter: blur(14px);   /* Safari support          */
+    box-shadow: 0 8px 32px var(--card-shadow);
+
+    /* Smooth grow effect on hover */
+    transition: transform var(--transition-speed),
+                box-shadow var(--transition-speed);
+
+    /* Fade-in on load */
+    animation: fadeSlideUp 0.6s ease-out both;
+}
+
+.left-container:hover,
+.right-container:hover {
+    transform: translateY(-4px);   /* lift up slightly */
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* Sizing for each panel */
+.left-container {
+    width: 380px;
+    min-width: 300px;
+    animation-delay: 0.15s;   /* stagger the animation */
+}
+
+.right-container {
+    width: 420px;
+    min-width: 300px;
+    animation-delay: 0.3s;
+}
+
+/* ---------- 6. SEARCH FORM ---------- */
+/*
+   The form is laid out with flexbox so the label, input, and
+   button sit horizontally and wrap nicely on small screens.
+*/
+#search-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+#search-form label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+}
+
+/* --- Text input --- */
+#city-input {
+    flex: 1 1 160px;           /* grow / shrink / minimum width */
+    padding: 10px 16px;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color var(--transition-speed),
+                box-shadow var(--transition-speed);
+}
+
+/* 
+   :focus  → styles applied when the user clicks into the input.
+   We add a glowing cyan border.
+*/
+#city-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 8px var(--accent-glow);
+}
+
+#city-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+/* --- Submit button --- */
+#search-form button {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent), #6366f1);
+    color: #fff;
+    font-family: var(--font-main);
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background var(--transition-speed),
+                transform 0.15s,
+                box-shadow var(--transition-speed);
+}
+
+#search-form button:hover {
+    background: linear-gradient(135deg, var(--accent-hover), #4f46e5);
+    transform: scale(1.04);
+    box-shadow: 0 0 14px var(--accent-glow);
+}
+
+/* brief "press" feedback */
+#search-form button:active {
+    transform: scale(0.97);
+}
+
+/* ---------- 7. SECTION HEADINGS (h4) ---------- */
+h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 18px 0 10px;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--card-border);
+    padding-bottom: 6px;
+}
+
+/* ---------- 8. SEARCH HISTORY BUTTONS ---------- */
+/*
+   Each past-search city is rendered as a <button> inside #history-container.
+*/
+#history-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+#history-container button {
+    padding: 6px 16px;
+    border: 1px solid var(--card-border);
+    border-radius: 20px;          /* pill shape */
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-secondary);
+    font-family: var(--font-main);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+}
+
+#history-container button:hover {
+    background: var(--accent);
+    color: #0f0c29;
+    border-color: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+    transform: translateY(-2px);
+}
+
+/* ---------- 9. WEATHER INFO CARD ---------- */
+/*
+   The dynamically-created <div> inside #weather-info-container
+   gets a subtle inner card style.
+*/
+#weather-info-container {
+    min-height: 80px;          /* prevent layout jump before data loads */
+}
+
+#weather-info-container > div {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-top: 8px;
+
+    /* Card pop-in animation */
+    animation: popIn 0.4s ease-out;
+}
+
+#weather-info-container h4 {
+    font-size: 1.2rem;
+    color: #fff;
+    margin: 0 0 12px;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+#weather-info-container p {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    line-height: 1.7;
+}
+
+#weather-info-container p:last-child {
+    border-bottom: none;
+}
+
+/* Error message styling (the inline style="color:red" in JS overrides colour,
+   but we still refine layout) */
+#weather-info-container p[style] {
+    font-weight: 600;
+    text-align: center;
+    padding: 12px;
+    animation: shake 0.4s ease-out;
+}
+
+/* ---------- 10. KEYFRAME ANIMATIONS ---------- */
+
+/* Heading slides down and fades in */
+@keyframes fadeSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Cards slide up and fade in */
+@keyframes fadeSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(28px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Weather result pops in with a scale bounce */
+@keyframes popIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    70% {
+        transform: scale(1.02);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Error shake */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%      { transform: translateX(-6px); }
+    40%      { transform: translateX(6px); }
+    60%      { transform: translateX(-4px); }
+    80%      { transform: translateX(4px); }
+}
+
+/* ---------- 11. RESPONSIVE DESIGN ---------- */
+/*
+   @media  → applies rules only when the screen is ≤ 640px wide
+   (phones / narrow windows). We stack the panels vertically and
+   shrink fonts a bit.
+*/
+@media (max-width: 640px) {
+    body {
+        padding: 24px 14px 40px;
+        gap: 20px;
+    }
+
+    h1 {
+        font-size: 1.7rem;
+    }
+
+    .left-container,
+    .right-container {
+        width: 100%;
+        min-width: 0;
+        padding: 20px 18px;
+    }
+}

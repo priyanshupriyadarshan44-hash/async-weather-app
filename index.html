@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Weather API</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>Async Weather Tracker</h1>
+    <div class="left-container">
+        <div id="search-main-container">
+            <form id="search-form" action="">
+                <label for="city-input">Search City :</label>
+                <input type="text" id="city-input" placeholder="Enter city name">
+                <button type="submit">Search</button>
+            </form>
+        </div>
+        <div id="history-main-container">
+            <h4> Search History :</h4>
+            <div id="history-container">
+            </div>
+        </div>
+    </div>
+    <div class="right-container">
+        <h4> Weather Info</h4>
+        <div id="weather-info-container">
+        </div>
+    </div>
+
+    <script>
+
+        const API_KEY = "1a761d3bb408836cd1af3641ce1604c9"
+        let form = document.getElementById("search-form");
+        let city = document.querySelector("#city-input");
+        let weatherInfoContainer = document.getElementById("weather-info-container");
+        let historyContainer = document.getElementById("history-container");
+
+        function saveHistory(cityName) {
+            let history = JSON.parse(localStorage.getItem("searchHistory")) || [];
+            if (!history.includes(cityName)) {
+                history.push(cityName);
+                localStorage.setItem("searchHistory", JSON.stringify(history));
+            }
+        }
+
+        function loadHistory() {
+            let history = JSON.parse(localStorage.getItem("searchHistory")) || [];
+            historyContainer.innerHTML = "";
+            history.forEach(function (cityName) {
+                let btn = document.createElement("button");
+                btn.innerText = cityName;
+                btn.addEventListener("click", function () {
+                    fetchWeather(cityName);
+                });
+                historyContainer.appendChild(btn);
+            });
+        }
+
+        async function fetchWeather(cityName) {
+            console.log("1. fetchWeather called - this is synchronous");
+            console.log("2. About to call fetch() - still synchronous");
+
+            try {
+                let result = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${API_KEY}`)
+                console.log("4. fetch() resolved - this is asynchronous (came back from Web API)");
+
+                if (!result.ok) {
+                    throw new Error("City not found. Please try again.");
+                }
+
+                let data = await result.json();
+                console.log("5. Data received:", data);
+
+                let card = document.createElement("div");
+                card.innerHTML = `
+            <h4> City : ${data.name}</h4>
+            <p>Temperature : ${(data.main.temp - 273.15).toFixed(1)} °C</p>
+            <p>Humidity : ${data.main.humidity} %</p>
+            <p>Wind Speed : ${data.wind.speed} m/s</p>
+        `
+                weatherInfoContainer.innerHTML = "";
+                document.getElementById("weather-info-container").appendChild(card);
+
+                saveHistory(data.name);
+                loadHistory();
+
+            } catch (error) {
+                console.log("Error caught:", error.message);
+                weatherInfoContainer.innerHTML = `<p style="color:red;">${error.message}</p>`;
+            }
+        }
+
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            console.log("3. Form submitted - synchronous code continues here while fetch is pending");
+            fetchWeather(city.value);
+        })
+
+        loadHistory();
+
+    </script>
+
+
+</body>
+
+</html>
